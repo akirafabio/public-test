@@ -6,37 +6,48 @@
 import UIKit
 
 class AboutViewController: UIViewController {
-	var onClose: (() -> Void) = {}
+    var onClose: (() -> Void) = {}
 
-	override func viewDidLoad() {
-		super.viewDidLoad()
+    private let label: UILabel = {
+        let label = UILabel()
+        label.numberOfLines = 0
+        label.text = Strings.About.label
+        label.textColor = .black
+        label.textAlignment = .center
+        return label
+    }()
 
-		view.backgroundColor = .white
+    override func viewDidLoad() {
+        super.viewDidLoad()
+        buildLayout()
+    }
 
-		let label = UILabel()
-		label.numberOfLines = 0
-		label.translatesAutoresizingMaskIntoConstraints = false
-		label.text = "Public is where serious investors build their wealth. Grow your cash with higher yields and build a multi-asset portfolio for the long haul."
-		label.textColor = .black
-		label.textAlignment = .center
+    override func viewDidAppear(_ animated: Bool) {
+        super.viewDidAppear(animated)
+    }
 
-		view.addSubview(label)
+    @objc private func closeTap() {
+        onClose()
+    }
+}
 
-		NSLayoutConstraint.activate([
-			label.leadingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.leadingAnchor, constant: 32),
-			label.trailingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.trailingAnchor, constant: -32),
-			label.centerYAnchor.constraint(equalTo: view.safeAreaLayoutGuide.centerYAnchor),
-		])
+extension AboutViewController: ViewConfiguration {
+    func setupViewHierarchy() {
+        view.addSubview(label)
+    }
 
-		navigationItem.rightBarButtonItem = .init(barButtonSystemItem: .close, target: self, action: #selector(closeTap))
-		navigationItem.title = "About"
-	}
+    func setupViewConstraints() {
+        label.translatesAutoresizingMaskIntoConstraints = false
+        NSLayoutConstraint.activate([
+            label.leadingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.leadingAnchor, constant: 32),
+            label.trailingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.trailingAnchor, constant: -32),
+            label.centerYAnchor.constraint(equalTo: view.safeAreaLayoutGuide.centerYAnchor),
+        ])
+    }
 
-	override func viewDidAppear(_ animated: Bool) {
-		super.viewDidAppear(animated)
-	}
-
-	@objc private func closeTap() {
-		onClose()
-	}
+    func setupViewConfiguration() {
+        navigationItem.title = Strings.About.title
+        navigationItem.rightBarButtonItem = .init(barButtonSystemItem: .close, target: self, action: #selector(closeTap))
+        view.backgroundColor = .white
+    }
 }

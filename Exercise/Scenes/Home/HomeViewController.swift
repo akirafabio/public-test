@@ -5,28 +5,32 @@
 
 import UIKit
 
-final class ViewController: UIViewController {
+final class HomeViewController: UIViewController {
     var onAbout: (() -> Void) = {}
 
     private let button: UIButton = {
         let button = UIButton()
-        button.setTitle("About", for: .normal)
+        button.setTitle(Strings.Home.aboutButtonTitle, for: .normal)
         button.setTitleColor(.systemBlue, for: .normal)
         return button
     }()
 
     override func viewDidLoad() {
         super.viewDidLoad()
-        setupHierarchyViews()
-        setupViewConstraints()
-        setupView()
+        buildLayout()
     }
 
-    private func setupHierarchyViews() {
+    @objc private func aboutButtonTap() {
+        onAbout()
+    }
+}
+
+extension HomeViewController: ViewConfiguration {
+    func setupViewHierarchy() {
         view.addSubview(button)
     }
 
-    private func setupViewConstraints() {
+    func setupViewConstraints() {
         button.translatesAutoresizingMaskIntoConstraints = false
         NSLayoutConstraint.activate([
             button.centerXAnchor.constraint(equalTo: view.centerXAnchor),
@@ -34,12 +38,8 @@ final class ViewController: UIViewController {
         ])
     }
 
-    private func setupView() {
+    func setupViewConfiguration() {
         view.backgroundColor = .white
         button.addTarget(self, action: #selector(aboutButtonTap), for: .touchUpInside)
-    }
-
-    @objc private func aboutButtonTap() {
-        onAbout()
     }
 }

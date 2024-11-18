@@ -16,7 +16,7 @@ class AppCoordinator {
     }
 
     func start() {
-        let viewController = ViewController()
+        let viewController = HomeViewController()
         viewController.onAbout = { [weak self] in
             self?.goToAbout()
         }
