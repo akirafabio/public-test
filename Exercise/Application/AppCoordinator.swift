@@ -7,8 +7,9 @@ import UIKit
 
 class AppCoordinator {
     private let window: UIWindow
-
     private var childCoordinator: MainCoordinator?
+
+    private weak var viewController: UIViewController?
 
     init(window: UIWindow) {
         self.window = window
@@ -21,18 +22,23 @@ class AppCoordinator {
         }
         window.rootViewController = viewController
         window.makeKeyAndVisible()
+
+        self.viewController = viewController
     }
 
     func goToAbout() {
         let navigationController = UINavigationController()
         navigationController.modalPresentationStyle = .fullScreen
 
-        let coordinator = MainCoordinator(navigationController: navigationController)
+        let coordinator = MainCoordinator(navigationController: navigationController) { [weak self] in
+            self?.viewController?.dismiss(animated: true)
+            self?.childCoordinator = nil
+        }
+
         coordinator.start()
 
         childCoordinator = coordinator
 
-
-        window.rootViewController?.present(navigationController, animated: true, completion: nil)
+        viewController?.present(navigationController, animated: true, completion: nil)
     }
 }
