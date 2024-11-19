@@ -17,9 +17,13 @@ class AppCoordinator {
 
     func start() {
         let viewController = HomeViewController()
-        viewController.onAbout = { [weak self] in
-            self?.goToAbout()
-        }
+            .onTodoButtonClick { [weak self] in
+                self?.goToTodo()
+            }
+            .onAboutButtonClick { [weak self] in
+                self?.goToAbout()
+            }
+
         window.rootViewController = viewController
         window.makeKeyAndVisible()
 
@@ -40,5 +44,9 @@ class AppCoordinator {
         childCoordinator = coordinator
 
         viewController?.present(navigationController, animated: true, completion: nil)
+    }
+
+    func goToTodo() {
+        // TODO: - Move To TodoScene
     }
 }

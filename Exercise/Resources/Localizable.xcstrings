@@ -30,6 +30,16 @@
           }
         }
       }
+    },
+    "Home.todoButtonTitle" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "TO-DO: 0"
+          }
+        }
+      }
     }
   },
   "version" : "1.0"
