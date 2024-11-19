@@ -1,22 +1,45 @@
-//
-//  AppCoordinator.swift
-//  Exercise
-//
-
 import UIKit
 
-class AppCoordinator {
+final class AppCoordinator {
     private let window: UIWindow
-    private var childCoordinator: MainCoordinator?
-
-    private weak var viewController: UIViewController?
+    private var navigationController: UINavigationController?
+    private var childCoordinator: Coordinator?
 
     init(window: UIWindow) {
         self.window = window
     }
 
+    private func goToAbout() {
+        let navigationController = UINavigationController()
+        navigationController.modalPresentationStyle = .fullScreen
+
+        let coordinator = MainCoordinator(navigationController: navigationController) { [weak self] in
+            self?.navigationController?.dismiss(animated: true)
+            self?.childCoordinator = nil
+        }
+        coordinator.start()
+
+        childCoordinator = coordinator
+
+        self.navigationController?.present(navigationController, animated: true, completion: nil)
+    }
+
+    private func goToTodo() {
+        guard let navigationController else {
+            return
+        }
+
+        let coordinator = TodoCoordinator(navigationController: navigationController)
+        coordinator.parent = self
+        coordinator.start()
+
+        childCoordinator = coordinator
+    }
+}
+
+extension AppCoordinator: Coordinator {
     func start() {
-        let viewController = HomeViewController()
+        let homeViewController = HomeViewController()
             .onTodoButtonClick { [weak self] in
                 self?.goToTodo()
             }
@@ -24,29 +47,19 @@ class AppCoordinator {
                 self?.goToAbout()
             }
 
-        window.rootViewController = viewController
+        let navigationController = UINavigationController()
+        navigationController.viewControllers = [
+            homeViewController
+        ]
+
+        window.rootViewController = navigationController
         window.makeKeyAndVisible()
 
-        self.viewController = viewController
+        self.navigationController = navigationController
     }
 
-    func goToAbout() {
-        let navigationController = UINavigationController()
-        navigationController.modalPresentationStyle = .fullScreen
-
-        let coordinator = MainCoordinator(navigationController: navigationController) { [weak self] in
-            self?.viewController?.dismiss(animated: true)
-            self?.childCoordinator = nil
-        }
-
-        coordinator.start()
-
-        childCoordinator = coordinator
-
-        viewController?.present(navigationController, animated: true, completion: nil)
-    }
-
-    func goToTodo() {
-        // TODO: - Move To TodoScene
+    func coordinatorDidFinish() {
+        navigationController?.popViewController(animated: true)
+        childCoordinator = nil
     }
 }
