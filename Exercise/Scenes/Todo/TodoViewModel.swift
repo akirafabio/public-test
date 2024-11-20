@@ -2,18 +2,16 @@ import Foundation
 
 protocol TodoViewModelInterface {
     var items: [String] { get }
+    func updateView(_ onUpdateView: @escaping () -> Void)
     func backButtonDidTouch()
     func saveTask(taskName: String)
 }
 
 final class TodoViewModel {
-    var items: [String] {
-        didSet {
-
-        }
-    }
+    var items: [String]
 
     private var onBackButtonAction: (() -> Void)?
+    private var onUpdateView: (() -> Void)?
 
     init(items: [String] = []) {
         self.items = items
@@ -33,5 +31,10 @@ extension TodoViewModel: TodoViewModelInterface {
 
     func saveTask(taskName: String) {
         items.append(taskName)
+        onUpdateView?()
+    }
+
+    func updateView(_ onUpdateView: @escaping () -> Void) {
+        self.onUpdateView = onUpdateView
     }
 }

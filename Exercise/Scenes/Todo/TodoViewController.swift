@@ -1,13 +1,14 @@
 import UIKit
 
 final class TodoViewController: UIViewController {
-    private let viewModel: TodoViewModelInterface
+    private var viewModel: TodoViewModelInterface
 
     private let tableView: UITableView = {
         let tableView = UITableView(frame: .zero, style: .plain)
         return tableView
     }()
 
+    @available(*, unavailable)
     required init?(coder: NSCoder) { nil }
 
     init(viewModel: TodoViewModelInterface) {
@@ -20,14 +21,6 @@ final class TodoViewController: UIViewController {
         buildLayout()
     }
 
-    @objc private func backButtonTap() {
-        viewModel.backButtonDidTouch()
-    }
-
-    @objc private func addButtonTap() {
-        presentTodoAlert()
-    }
-
     private func presentTodoAlert() {
         let alertViewController = AlertViewControllerFactory.todoAlert { [weak self] taskName in
             guard let taskName else {
@@ -37,6 +30,14 @@ final class TodoViewController: UIViewController {
         }
 
         present(alertViewController, animated: true)
+    }
+
+    @objc private func backButtonTap() {
+        viewModel.backButtonDidTouch()
+    }
+
+    @objc private func addButtonTap() {
+        presentTodoAlert()
     }
 }
 
@@ -75,11 +76,17 @@ extension TodoViewController: ViewConfiguration {
 
         tableView.dataSource = self
     }
+
+    func setupBinding() {
+        viewModel.updateView { [weak self] in
+            self?.tableView.reloadData()
+        }
+    }
 }
 
 extension TodoViewController: UITableViewDataSource {
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        return viewModel.items
+        return viewModel.items.count
     }
 
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {

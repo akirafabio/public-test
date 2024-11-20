@@ -22,9 +22,7 @@ extension TodoCoordinator: Coordinator {
                 self?.close()
             }
 
-        let viewController = TodoViewController(
-            viewModel: viewModel
-        )
+        let viewController = TodoViewController(viewModel: viewModel)
 
         navigationController.pushViewController(viewController, animated: true)
     }
