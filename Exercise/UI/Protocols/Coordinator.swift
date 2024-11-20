@@ -1,8 +1,8 @@
 protocol Coordinator: AnyObject {
     func start()
-    func removeChildCoordinator()
+    func removeFromParent()
 }
 
 extension Coordinator {
-    func removeChildCoordinator() { }
+    func removeFromParent() { }
 }

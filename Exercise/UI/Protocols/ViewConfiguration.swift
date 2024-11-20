@@ -5,6 +5,7 @@ protocol ViewConfiguration {
     func setupViewHierarchy()
     func setupViewConstraints()
     func setupViewConfiguration()
+    func setupBinding()
 }
 
 extension ViewConfiguration {
@@ -12,5 +13,10 @@ extension ViewConfiguration {
         setupViewHierarchy()
         setupViewConstraints()
         setupViewConfiguration()
+        setupBinding()
     }
+
+    func setupViewConfiguration() { }
+
+    func setupBinding() { }
 }
