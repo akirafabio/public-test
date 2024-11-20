@@ -48,17 +48,15 @@ extension AppCoordinator: Coordinator {
             }
 
         let navigationController = UINavigationController()
-        navigationController.viewControllers = [
-            homeViewController
-        ]
+        navigationController.pushViewController(homeViewController, animated: true)
+
+        self.navigationController = navigationController
 
         window.rootViewController = navigationController
         window.makeKeyAndVisible()
-
-        self.navigationController = navigationController
     }
 
-    func removeChildCoordinator() {
+    func removeFromParent() {
         childCoordinator = nil
     }
 }

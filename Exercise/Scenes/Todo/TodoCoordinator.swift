@@ -11,23 +11,20 @@ final class TodoCoordinator {
 
     private func close() {
         navigationController.popViewController(animated: true)
-        parent?.removeChildCoordinator()
-    }
-
-    private func goToAdd() {
-        print("[TEST] \(Self.self) \(#function)")
+        parent?.removeFromParent()
     }
 }
 
 extension TodoCoordinator: Coordinator {
     func start() {
-        let viewController = TodoViewController()
-            .onBackButtonClick { [weak self] in
+        let viewModel = TodoViewModel()
+            .onBackButtonTouch { [weak self] in
                 self?.close()
             }
-            .onAddButtonClick { [weak self] in
-                self?.goToAdd()
-            }
+
+        let viewController = TodoViewController(
+            viewModel: viewModel
+        )
 
         navigationController.pushViewController(viewController, animated: true)
     }

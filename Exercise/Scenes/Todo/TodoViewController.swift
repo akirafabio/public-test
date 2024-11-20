@@ -1,8 +1,7 @@
 import UIKit
 
 final class TodoViewController: UIViewController {
-    private var backButtonAction: (() -> Void)?
-    private var addButtonAction: (() -> Void)?
+    private let viewModel: TodoViewModelInterface
 
     private let tableView: UITableView = {
         let tableView = UITableView(frame: .zero, style: .plain)
@@ -11,7 +10,8 @@ final class TodoViewController: UIViewController {
 
     required init?(coder: NSCoder) { nil }
 
-    init() {
+    init(viewModel: TodoViewModelInterface) {
+        self.viewModel = viewModel
         super.init(nibName: nil, bundle: nil)
     }
 
@@ -21,23 +21,22 @@ final class TodoViewController: UIViewController {
     }
 
     @objc private func backButtonTap() {
-        backButtonAction?()
+        viewModel.backButtonDidTouch()
     }
 
     @objc private func addButtonTap() {
-        addButtonAction?()
+        presentTodoAlert()
     }
 
-    @discardableResult
-    func onBackButtonClick(_ action: (() -> Void)?) -> Self {
-        self.backButtonAction = action
-        return self
-    }
+    private func presentTodoAlert() {
+        let alertViewController = AlertViewControllerFactory.todoAlert { [weak self] taskName in
+            guard let taskName else {
+                return
+            }
+            self?.viewModel.saveTask(taskName: taskName)
+        }
 
-    @discardableResult
-    func onAddButtonClick(_ action: (() -> Void)?) -> Self {
-        self.addButtonAction = action
-        return self
+        present(alertViewController, animated: true)
     }
 }
 
@@ -80,9 +79,9 @@ extension TodoViewController: ViewConfiguration {
 
 extension TodoViewController: UITableViewDataSource {
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        return 0
+        return viewModel.items
     }
-    
+
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         UITableViewCell()
     }
