@@ -23,11 +23,13 @@ final class TodoViewController: UIViewController {
 
     private func presentTodoAlert() {
         let alertViewController = AlertViewControllerFactory.todoAlert { [weak self] taskName in
+            guard let self else {
+                return
+            }
             guard let taskName else {
                 return
             }
-            let todoTask = TodoTask(name: taskName)
-            self?.viewModel.saveTask(todoTask)
+            self.viewModel.saveTask(taskName)
         }
 
         present(alertViewController, animated: true)
@@ -79,23 +81,30 @@ extension TodoViewController: ViewConfiguration {
     }
 
     func setupBinding() {
-        viewModel.updateView { [weak self] in
+        viewModel.onUpdateView { [weak self] in
             self?.tableView.reloadData()
+        }
+
+        viewModel.onDeleteTableCell { [weak self] indexPath in
+            self?.tableView.deleteRows(at: [indexPath], with: .left)
+        }
+
+        viewModel.onReloadTableCell { [weak self] indexPath in
+            self?.tableView.reloadRows(at: [indexPath], with: .automatic)
         }
     }
 }
 
 extension TodoViewController: UITableViewDataSource {
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        return viewModel.items.count
+        return viewModel.tasks.count
     }
 
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         let tableCell = tableView.dequeueReusableCell(withType: TodoTableCell.self, for: indexPath)
 
-        if let task = viewModel.items[safe: indexPath.row] {
-            tableCell.setupLabelText(task.name)
-            tableCell.setupLoadingState(.loading)
+        if let task = viewModel.tasks[safe: indexPath.row] {
+            tableCell.configura(with: task)
         }
 
         return tableCell

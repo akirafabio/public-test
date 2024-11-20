@@ -1,31 +1,19 @@
 import Foundation
 
 protocol TodoServiceProtocol {
-    func saveTask(task: String, completion: (Bool) -> Void)
+    func save(_ task: TodoTask, completion: @escaping (Bool) -> Void)
 }
 
 final class TodoService {
-
+    private let successRate = 0.75
 }
 
 extension TodoService: TodoServiceProtocol {
-    func saveTask(task: String, completion: (Bool) -> Void) {
-//        let minimumDelay = 500
-//        let maximumDelay = 5_000
-//        let millisecondsDelay = Int.random(in: minimumDelay...maximumDelay)
-//
-//        DispatchQueue.main.asyncAfter(deadline: .now() + .milliseconds(millisecondsDelay)) {
-//
-//        }
-
-        let randomRate = Int.random(in: 1...4)
-        print(randomRate)
-
-        switch randomRate {
-        case 1:
-            completion(false)
-        default:
-            completion(true)
+    func save(_ task: TodoTask, completion: @escaping (Bool) -> Void) {
+        let requestDelay = Int.random(in: 500...5_000)
+        DispatchQueue.global().asyncAfter(deadline: .now() + .milliseconds(requestDelay)) {
+            let isTaskSaved = Double.random(in: 0...1) < self.successRate
+            completion(isTaskSaved)
         }
     }
 }

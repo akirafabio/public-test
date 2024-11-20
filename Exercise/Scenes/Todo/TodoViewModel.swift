@@ -1,17 +1,27 @@
 import Foundation
+import Dispatch
 
 protocol TodoViewModelInterface {
-    var items: [TodoTask] { get }
-    func updateView(_ onUpdateView: @escaping () -> Void)
+    var tasks: [TodoTask] { get }
+
     func backButtonDidTouch()
-    func saveTask(_ task: TodoTask)
+    func saveTask(_ taskName: String)
+
+    func onUpdateView(_ updateView: @escaping () -> Void)
+    func onDeleteTableCell(_ deleteTableCell: @escaping (IndexPath) -> Void)
+    func onReloadTableCell(_ reloadRowsBinding: @escaping (IndexPath) -> Void)
 }
 
 final class TodoViewModel {
-    var items: [TodoTask] = []
+    private let taskQueue = DispatchQueue(label: "com.public.concurrent.queue", attributes: .concurrent)
+
+    private(set) var tasks: [TodoTask] = []
 
     private var onBackButtonAction: (() -> Void)?
-    private var onUpdateView: (() -> Void)?
+
+    private var updateViewBinding: (() -> Void)?
+    private var deleteTableCellBinding: ((IndexPath) -> Void)?
+    private var reloadTableCellBinding: ((IndexPath) -> Void)?
 
     private let service: TodoServiceProtocol
 
@@ -31,15 +41,59 @@ extension TodoViewModel: TodoViewModelInterface {
         onBackButtonAction?()
     }
 
-    func saveTask(_ task: TodoTask) {
-        items.insert(task, at: 0)
-        onUpdateView?()
-//        service.saveTask(task: taskName) { isSaved in
-//            print("- isSaved: \(isSaved)")
-//        }
+    func saveTask(_ taskName: String) {
+        let task = TodoTask(name: taskName)
+
+        tasks.insert(task, at: 0)
+        updateViewBinding?()
+
+        service.save(task) { [weak self] isTaskSaved in
+            guard let self else {
+                return
+            }
+
+            self.taskQueue.async(flags: .barrier) {
+                guard let index = self.tasks.firstIndex(where: { $0.id == task.id }) else {
+                    return
+                }
+
+                self.tasks[index].isSaving = false
+                self.tasks[index].didFail = !isTaskSaved
+
+                DispatchQueue.main.async {
+                    let indexPath = IndexPath(row: index, section: 0)
+                    self.reloadTableCellBinding?(indexPath)
+                }
+
+                if isTaskSaved {
+                    return
+                }
+
+                DispatchQueue.main.asyncAfter(deadline: .now() + .seconds(1)) {
+                    self.taskQueue.async(flags: .barrier) {
+                        guard let indexToRemove = self.tasks.firstIndex(where: { $0.id == task.id })  else {
+                            return
+                        }
+                        self.tasks.remove(at: indexToRemove)
+                        DispatchQueue.main.async {
+                            let indexPath = IndexPath(row: indexToRemove, section: 0)
+                            self.deleteTableCellBinding?(indexPath)
+                        }
+                    }
+                }
+            }
+        }
     }
 
-    func updateView(_ onUpdateView: @escaping () -> Void) {
-        self.onUpdateView = onUpdateView
+    func onUpdateView(_ updateViewBinding: @escaping () -> Void) {
+        self.updateViewBinding = updateViewBinding
+    }
+
+    func onDeleteTableCell(_ deleteTableCellBinding: @escaping (IndexPath) -> Void) {
+        self.deleteTableCellBinding = deleteTableCellBinding
+    }
+
+    func onReloadTableCell(_ reloadTableCellBinding: @escaping (IndexPath) -> Void) {
+        self.reloadTableCellBinding = reloadTableCellBinding
     }
 }

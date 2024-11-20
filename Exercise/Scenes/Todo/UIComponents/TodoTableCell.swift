@@ -1,14 +1,9 @@
 import UIKit
 
 final class TodoTableCell: UITableViewCell {
-    enum LoadingState {
-        case loading
-        case completed
-        case failure
-    }
-
     private let label: UILabel = {
         let label = UILabel()
+        label.textColor = .black
         label.numberOfLines = 0
         return label
     }()
@@ -33,16 +28,18 @@ final class TodoTableCell: UITableViewCell {
 }
 
 extension TodoTableCell {
-    func setupLabelText(_ text: String) {
-        label.text = text
-    }
+    func configura(with task: TodoTask) {
+        label.text = task.name
 
-    func setupLoadingState(_ loadingState: LoadingState) {
-        switch loadingState {
-        case .loading:
+        if task.isSaving {
             activityIndicator.startAnimating()
-        default:
+            label.textColor = .black
+        } else if task.didFail {
             activityIndicator.stopAnimating()
+            label.textColor = .red
+        } else {
+            activityIndicator.stopAnimating()
+            label.textColor = .black
         }
     }
 }
