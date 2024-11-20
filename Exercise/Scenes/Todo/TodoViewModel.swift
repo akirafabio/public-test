@@ -1,20 +1,22 @@
 import Foundation
 
 protocol TodoViewModelInterface {
-    var items: [String] { get }
+    var items: [TodoTask] { get }
     func updateView(_ onUpdateView: @escaping () -> Void)
     func backButtonDidTouch()
-    func saveTask(taskName: String)
+    func saveTask(_ task: TodoTask)
 }
 
 final class TodoViewModel {
-    var items: [String]
+    var items: [TodoTask] = []
 
     private var onBackButtonAction: (() -> Void)?
     private var onUpdateView: (() -> Void)?
 
-    init(items: [String] = []) {
-        self.items = items
+    private let service: TodoServiceProtocol
+
+    init(service: TodoServiceProtocol) {
+        self.service = service
     }
 
     @discardableResult
@@ -29,9 +31,12 @@ extension TodoViewModel: TodoViewModelInterface {
         onBackButtonAction?()
     }
 
-    func saveTask(taskName: String) {
-        items.append(taskName)
+    func saveTask(_ task: TodoTask) {
+        items.insert(task, at: 0)
         onUpdateView?()
+//        service.saveTask(task: taskName) { isSaved in
+//            print("- isSaved: \(isSaved)")
+//        }
     }
 
     func updateView(_ onUpdateView: @escaping () -> Void) {

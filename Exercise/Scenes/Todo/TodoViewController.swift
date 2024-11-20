@@ -26,7 +26,8 @@ final class TodoViewController: UIViewController {
             guard let taskName else {
                 return
             }
-            self?.viewModel.saveTask(taskName: taskName)
+            let todoTask = TodoTask(name: taskName)
+            self?.viewModel.saveTask(todoTask)
         }
 
         present(alertViewController, animated: true)
@@ -90,6 +91,13 @@ extension TodoViewController: UITableViewDataSource {
     }
 
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-        UITableViewCell()
+        let tableCell = tableView.dequeueReusableCell(withType: TodoTableCell.self, for: indexPath)
+
+        if let task = viewModel.items[safe: indexPath.row] {
+            tableCell.setupLabelText(task.name)
+            tableCell.setupLoadingState(.loading)
+        }
+
+        return tableCell
     }
 }

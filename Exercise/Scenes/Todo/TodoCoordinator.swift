@@ -17,10 +17,13 @@ final class TodoCoordinator {
 
 extension TodoCoordinator: Coordinator {
     func start() {
-        let viewModel = TodoViewModel()
-            .onBackButtonTouch { [weak self] in
-                self?.close()
-            }
+        let service = TodoService()
+
+        let viewModel = TodoViewModel(service: service)
+
+        viewModel.onBackButtonTouch { [weak self] in
+            self?.close()
+        }
 
         let viewController = TodoViewController(viewModel: viewModel)
 

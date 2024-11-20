@@ -16,5 +16,7 @@ extension ViewConfiguration {
         setupBinding()
     }
 
+    func setupViewConfiguration() { }
+
     func setupBinding() { }
 }
