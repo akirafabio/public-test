@@ -1,8 +1,3 @@
-//
-//  ViewController.swift
-//  Exercise
-//
-
 import UIKit
 
 final class HomeViewController: UIViewController {
@@ -18,7 +13,6 @@ final class HomeViewController: UIViewController {
     }()
     private let todoButton: UIButton = {
         let aboutButton = UIButton()
-        aboutButton.setTitle(Strings.Home.todoButtonTitle, for: .normal)
         aboutButton.setTitleColor(.systemBlue, for: .normal)
         aboutButton.backgroundColor = .secondarySystemBackground
         return aboutButton
@@ -76,7 +70,10 @@ extension HomeViewController: ViewConfiguration {
 
     func setupViewConfiguration() {
         view.backgroundColor = .white
+
         aboutButton.addTarget(self, action: #selector(aboutButtonTap), for: .touchUpInside)
+
+        todoButton.setTitle(Strings.Home.todoButtonTitle(arg: "\(AppTaskManager.shared.tasks.count)"), for: .normal)
         todoButton.addTarget(self, action: #selector(todoButtonTap), for: .touchUpInside)
     }
 }

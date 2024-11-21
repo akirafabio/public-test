@@ -4,8 +4,11 @@ enum Strings {
     enum Home {
         /// About
         static let aboutButtonTitle = String(localized: "Home.aboutButtonTitle")
-        /// TO-DO: 0
-        static let todoButtonTitle = String(localized: "Home.todoButtonTitle")
+        /// TO-DO: %@
+        static func todoButtonTitle(arg: String) -> String {
+            String(localized: "Home.todoButtonTitle \(arg)")
+        }
+
     }
 
     enum About {
