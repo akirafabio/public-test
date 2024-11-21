@@ -8,4 +8,7 @@ final class AppTaskManager {
         self.tasks = []
     }
 
+    func store(_ tasks: [TodoTask]) {
+        self.tasks = tasks.filter { !$0.isSaving }
+    }
 }

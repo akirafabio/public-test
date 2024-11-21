@@ -6,6 +6,7 @@ protocol ViewConfiguration {
     func setupViewConstraints()
     func setupViewConfiguration()
     func setupBinding()
+    func updateView()
 }
 
 extension ViewConfiguration {
@@ -19,4 +20,6 @@ extension ViewConfiguration {
     func setupViewConfiguration() { }
 
     func setupBinding() { }
+
+    func updateView() { }
 }
