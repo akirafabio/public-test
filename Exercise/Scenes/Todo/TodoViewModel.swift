@@ -5,6 +5,7 @@ protocol TodoViewModelInterface {
     var tasks: [TodoTask] { get }
 
     func backButtonDidTouch()
+    func viewDidDisappear()
     func saveTask(_ taskName: String)
     func deleteSwipeActionDidTrigger(_ task: TodoTask)
 
@@ -16,7 +17,7 @@ protocol TodoViewModelInterface {
 final class TodoViewModel {
     private let taskQueue = DispatchQueue(label: "com.public.concurrent.queue", attributes: .concurrent)
 
-    private(set) var tasks: [TodoTask] = []
+    private(set) var tasks: [TodoTask] = AppTaskManager.shared.tasks
 
     private var onBackButtonAction: (() -> Void)?
 
@@ -57,6 +58,10 @@ final class TodoViewModel {
 extension TodoViewModel: TodoViewModelInterface {
     func backButtonDidTouch() {
         onBackButtonAction?()
+    }
+
+    func viewDidDisappear() {
+        AppTaskManager.shared.store(tasks)
     }
 
     func saveTask(_ taskName: String) {

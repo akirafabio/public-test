@@ -30,6 +30,11 @@ final class HomeViewController: UIViewController {
         buildLayout()
     }
 
+    override func viewDidAppear(_ animated: Bool) {
+        super.viewDidAppear(animated)
+        updateView()
+    }
+
     @objc private func aboutButtonTap() {
         aboutButtonAction?()
     }
@@ -73,7 +78,10 @@ extension HomeViewController: ViewConfiguration {
 
         aboutButton.addTarget(self, action: #selector(aboutButtonTap), for: .touchUpInside)
 
-        todoButton.setTitle(Strings.Home.todoButtonTitle(arg: "\(AppTaskManager.shared.tasks.count)"), for: .normal)
         todoButton.addTarget(self, action: #selector(todoButtonTap), for: .touchUpInside)
+    }
+
+    func updateView() {
+        todoButton.setTitle(Strings.Home.todoButtonTitle(arg: "\(AppTaskManager.shared.tasks.count)"), for: .normal)
     }
 }

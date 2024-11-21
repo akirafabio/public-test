@@ -21,6 +21,11 @@ final class TodoViewController: UIViewController {
         buildLayout()
     }
 
+    override func viewDidDisappear(_ animated: Bool) {
+        super.viewDidDisappear(animated)
+        viewModel.viewDidDisappear()
+    }
+
     private func presentTodoAlert() {
         let alertViewController = AlertViewControllerFactory.todoAlert { [weak self] taskName in
             guard let self else {
