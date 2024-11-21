@@ -124,7 +124,7 @@ extension TodoViewController: UITableViewDelegate {
 
         let deleteSwipeAction = UIContextualAction(
             style: .destructive,
-            title: "X",
+            title: Strings.Todo.deleteSwipeActionTitle,
             handler: { [weak self] _, _, complete in
                 guard let self else {
                     complete(false)

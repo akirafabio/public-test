@@ -3,23 +3,23 @@ import UIKit
 enum AlertViewControllerFactory {
     static func todoAlert(onPrimaryAction: ((String?) -> Void)? = nil) -> UIAlertController {
         let alertViewController = UIAlertController(
-            title: "TO-DO",
+            title: Strings.TodoAlert.title,
             message: nil,
             preferredStyle: .alert
         )
 
         alertViewController.addTextField { textField in
-            textField.placeholder = "Enter Task"
+            textField.placeholder = Strings.TodoAlert.textfieldPlaceholder
         }
 
         let cancelAction = UIAlertAction(
-            title: "Cancel",
+            title: Strings.TodoAlert.cancelButtonTitle,
             style: .cancel
         )
         alertViewController.addAction(cancelAction)
 
         let primaryAction = UIAlertAction(
-            title: "Save",
+            title: Strings.TodoAlert.primaryButtonTitle,
             style: .default
         ) { _ in
             guard let textFields = alertViewController.textFields else {
