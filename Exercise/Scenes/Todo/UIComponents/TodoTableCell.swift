@@ -28,7 +28,7 @@ final class TodoTableCell: UITableViewCell {
 }
 
 extension TodoTableCell {
-    func configura(with task: TodoTask) {
+    func configure(with task: TodoTask) {
         label.text = task.name
 
         if task.isSaving {
