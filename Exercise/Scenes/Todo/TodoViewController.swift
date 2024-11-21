@@ -78,6 +78,7 @@ extension TodoViewController: ViewConfiguration {
         view.backgroundColor = .white
 
         tableView.dataSource = self
+        tableView.delegate = self
     }
 
     func setupBinding() {
@@ -104,9 +105,36 @@ extension TodoViewController: UITableViewDataSource {
         let tableCell = tableView.dequeueReusableCell(withType: TodoTableCell.self, for: indexPath)
 
         if let task = viewModel.tasks[safe: indexPath.row] {
-            tableCell.configura(with: task)
+            tableCell.configure(with: task)
         }
 
         return tableCell
+    }
+}
+
+extension TodoViewController: UITableViewDelegate {
+    func tableView(_ tableView: UITableView, trailingSwipeActionsConfigurationForRowAt indexPath: IndexPath) -> UISwipeActionsConfiguration? {
+        guard let task = viewModel.tasks[safe: indexPath.row] else {
+            return nil
+        }
+
+        if task.isSaving {
+            return nil
+        }
+
+        let deleteSwipeAction = UIContextualAction(
+            style: .destructive,
+            title: "X",
+            handler: { [weak self] _, _, complete in
+                guard let self else {
+                    complete(false)
+                    return
+                }
+                self.viewModel.deleteSwipeActionDidTrigger(task)
+                complete(true)
+            }
+        )
+
+        return UISwipeActionsConfiguration(actions: [deleteSwipeAction])
     }
 }

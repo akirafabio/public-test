@@ -6,6 +6,7 @@ protocol TodoViewModelInterface {
 
     func backButtonDidTouch()
     func saveTask(_ taskName: String)
+    func deleteSwipeActionDidTrigger(_ task: TodoTask)
 
     func onUpdateView(_ updateView: @escaping () -> Void)
     func onDeleteTableCell(_ deleteTableCell: @escaping (IndexPath) -> Void)
@@ -34,6 +35,23 @@ final class TodoViewModel {
         self.onBackButtonAction = onBackButtonAction
         return self
     }
+
+    private func removeTask(_ task: TodoTask) {
+        taskQueue.async(flags: .barrier) { [weak self] in
+            guard let self else {
+                return
+            }
+            guard let indexToRemove = self.tasks.firstIndex(where: { $0.id == task.id })  else {
+                return
+            }
+            self.tasks.remove(at: indexToRemove)
+            DispatchQueue.main.async {
+                let indexPath = IndexPath(row: indexToRemove, section: 0)
+                self.deleteTableCellBinding?(indexPath)
+            }
+        }
+    }
+
 }
 
 extension TodoViewModel: TodoViewModelInterface {
@@ -69,20 +87,15 @@ extension TodoViewModel: TodoViewModelInterface {
                     return
                 }
 
-                DispatchQueue.main.asyncAfter(deadline: .now() + .seconds(1)) {
-                    self.taskQueue.async(flags: .barrier) {
-                        guard let indexToRemove = self.tasks.firstIndex(where: { $0.id == task.id })  else {
-                            return
-                        }
-                        self.tasks.remove(at: indexToRemove)
-                        DispatchQueue.main.async {
-                            let indexPath = IndexPath(row: indexToRemove, section: 0)
-                            self.deleteTableCellBinding?(indexPath)
-                        }
-                    }
+                DispatchQueue.main.asyncAfter(deadline: .now() + .seconds(2)) {
+                    self.removeTask(task)
                 }
             }
         }
+    }
+
+    func deleteSwipeActionDidTrigger(_ task: TodoTask) {
+        removeTask(task)
     }
 
     func onUpdateView(_ updateViewBinding: @escaping () -> Void) {
